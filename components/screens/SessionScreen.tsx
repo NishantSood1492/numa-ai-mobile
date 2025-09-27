@@ -1,13 +1,16 @@
 import { authClient } from "@/lib/auth-client";
 import { sessions } from "@/utils/sessions";
 import { useConversation } from "@elevenlabs/react-native";
-import { useLocalSearchParams } from "expo-router";
+// import * as Brightness from "expo-brightness";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { Text, View } from "react-native";
 import Button from "../Button";
 import Gradient from "../gradient";
+
 const SessionScreen = () => {
   const { data } = authClient.useSession();
+  const router = useRouter();
   const { sessionId } = useLocalSearchParams();
   const session =
     sessions.find((s) => s.id === Number(sessionId)) ?? sessions[0];
@@ -29,6 +32,18 @@ const SessionScreen = () => {
       console.log("Can send feedback changed:", prop.canSendFeedback),
     onUnhandledClientToolCall: (params) =>
       console.log("Unhandled client tool call:", params),
+
+    clientTools: {
+      //   handleSetBrightness: async (params) => {
+      //     const { brightnessValue } = params as { brightnessValue: number };
+      //     console.log("Received brightness value:", brightnessValue);
+      //     const { status } = await Brightness.requestPermissionsAsync();
+      //     if (status === "granted") {
+      //       await Brightness.setSystemBrightnessAsync(brightnessValue);
+      //       return brightnessValue;
+      //     }
+      //   },
+    },
   });
 
   const startConversation = async () => {
@@ -53,6 +68,10 @@ const SessionScreen = () => {
   const endConversation = async () => {
     try {
       await conversation.endSession();
+      router.push({
+        pathname: "/summary",
+        params: { conversationId },
+      });
     } catch (error) {
       console.error("Error ending conversation:", error);
     }
