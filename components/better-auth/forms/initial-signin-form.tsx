@@ -33,9 +33,6 @@ export function InitialSignInForm({
 
   async function onContinuePressed() {
     setErrorMessage("");
-    if (!isPending || !data) {
-      return;
-    }
 
     try {
       await authClient.signIn.email({
@@ -43,10 +40,7 @@ export function InitialSignInForm({
         password,
       });
     } catch (err: any) {
-      const { errors } = err;
-      console.error("signInError", JSON.stringify(err, null, 2));
-      setErrorMessage(errors[0].message);
-      setErroredParams(errors.map((e: any) => e?.meta?.paramName));
+      console.log("Error", err);
     }
   }
 

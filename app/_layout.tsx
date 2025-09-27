@@ -1,4 +1,5 @@
 import { authClient } from "@/lib/auth-client";
+import { ElevenLabsProvider } from "@elevenlabs/react-native";
 import { Stack } from "expo-router";
 
 function RootLayoutWithAuth() {
@@ -8,14 +9,16 @@ function RootLayoutWithAuth() {
     return null;
   }
   return (
-    <Stack>
-      <Stack.Protected guard={!isPending && data !== null}>
-        <Stack.Screen name="(protected)" />
-      </Stack.Protected>
-      <Stack.Protected guard={isPending || data == null}>
-        <Stack.Screen name="(public)" options={{ headerShown: false }} />
-      </Stack.Protected>
-    </Stack>
+    <ElevenLabsProvider>
+      <Stack>
+        <Stack.Protected guard={!isPending && data !== null}>
+          <Stack.Screen name="(protected)" options={{ headerShown: false }} />
+        </Stack.Protected>
+        <Stack.Protected guard={isPending || data == null}>
+          <Stack.Screen name="(public)" options={{ headerShown: false }} />
+        </Stack.Protected>
+      </Stack>
+    </ElevenLabsProvider>
   );
 }
 

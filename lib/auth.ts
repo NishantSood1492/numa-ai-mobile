@@ -20,5 +20,5 @@ export const auth = betterAuth({
       redirectURI: process.env.REDIRECT_URI as string,
     },
   },
-  trustedOrigins: ["numaai://"],
+  trustedOrigins: ["numaai://", "numaai://*"],
 });

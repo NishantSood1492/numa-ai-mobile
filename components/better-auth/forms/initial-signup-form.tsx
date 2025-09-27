@@ -35,21 +35,15 @@ function InitialSignUpForm({
   const [password, setPassword] = useState("");
 
   async function onContinuePressed() {
-    if (!isPending || !data) {
-      return;
-    }
-
     try {
       await authClient.signUp.email({
         email: emailAddress,
         password,
-        name: emailAddress,
+        name,
       });
       onContinue(emailAddress);
     } catch (err: any) {
-      console.error(JSON.stringify(err, null, 2));
-      setErrorMessage(err.errors[0].message);
-      setErroredParams(err.errors.map((error: any) => error.meta.paramName));
+      console.log(err);
     }
   }
 
