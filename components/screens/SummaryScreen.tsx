@@ -1,3 +1,4 @@
+import { authClient } from "@/lib/auth-client";
 import { ConversationResponse } from "@/utils/types";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -11,6 +12,9 @@ const SummaryScreen = () => {
   const [conversation, setConversation] = useState<ConversationResponse | null>(
     null
   );
+  const [isSaving, setIsSaving] = useState<boolean>(false);
+
+  const { data: userSession } = authClient.useSession();
 
   useEffect(() => {
     getSummary();
@@ -27,6 +31,39 @@ const SummaryScreen = () => {
     );
     const data: ConversationResponse = await response.json();
     setConversation(data);
+  };
+
+  const saveAndContinue = async () => {
+    const userId = userSession?.user.id;
+    try {
+      setIsSaving(true);
+      await fetch(
+        `${process.env.EXPO_PUBLIC_BASE_URL}/api/sessions?conversationId=${conversationId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            conversationId,
+            userId,
+            tokens: Number(conversation?.metadata?.cost),
+            callDurationSecs: Number(
+              conversation?.metadata?.call_duration_secs
+            ),
+            transcript: conversation?.transcript
+              .map((t) => t.message)
+              .join("\n"),
+            callSummaryTitle: conversation?.analysis?.call_summary_title,
+          }),
+        }
+      );
+    } catch (error) {
+      console.log("Error saving session:", error);
+    } finally {
+      setIsSaving(false);
+      router.dismissAll();
+    }
   };
 
   return (
@@ -74,7 +111,9 @@ const SummaryScreen = () => {
           </View>
         )}
         <View>
-          <Button onPress={() => router.dismissAll()}>Save and continue</Button>
+          <Button onPress={saveAndContinue}>
+            {isSaving ? "Saving..." : "Save and continue"}
+          </Button>
         </View>
       </ScrollView>
     </>

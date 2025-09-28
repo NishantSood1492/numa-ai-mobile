@@ -1,5 +1,6 @@
 import { sessions } from "@/utils/sessions";
 import { Image } from "expo-image";
+import { useRouter } from "expo-router";
 import React, { PropsWithChildren } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import Animated, {
@@ -16,6 +17,7 @@ const ParallaxScrollView = ({ children }: PropsWithChildren) => {
   const todaySession = sessions[Math.floor(Math.random() * sessions.length)];
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const scrollOffset = useScrollViewOffset(scrollRef);
+  const router = useRouter();
 
   const headerAnimatedStyle = useAnimatedStyle(() => {
     const translateY =
@@ -63,7 +65,16 @@ const ParallaxScrollView = ({ children }: PropsWithChildren) => {
             <Text style={styles.headerDescription}>
               {todaySession.description}
             </Text>
-            <Button>Start Session</Button>
+            <Button
+              onPress={() =>
+                router.navigate({
+                  pathname: "/session",
+                  params: { sessionId: todaySession.id },
+                })
+              }
+            >
+              Start Session
+            </Button>
             <View style={{ flex: 1 }} />
           </View>
         </View>
