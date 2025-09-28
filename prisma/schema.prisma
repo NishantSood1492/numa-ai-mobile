@@ -73,3 +73,14 @@ model Verification {
 
   @@map("verification")
 }
+
+model AISession {
+  id                  String  @id @default(uuid())
+  userId              String  
+  status              String? @default("in-progress")
+  conversationId      String
+  tokens              Int?  @default(0)
+  callDurationSecs    Int?  @default(0)
+  transcript          String?
+  callSummaryTitle    String?
+}
